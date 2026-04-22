@@ -76,7 +76,7 @@ export function DriverDashboardClient({ driverName, activeShift, shiftTrips }: P
     const result = await logTrip(activeShift.id, fd);
     setLoading(false);
     if ("error" in result) {
-      setTripError(result.error);
+      setTripError(result.error ?? null);
     } else {
       setTripOpen(false);
       setPlatform("");
@@ -139,11 +139,9 @@ export function DriverDashboardClient({ driverName, activeShift, shiftTrips }: P
         {/* Log trip button */}
         {activeShift && (
           <Dialog open={tripOpen} onOpenChange={setTripOpen}>
-            <DialogTrigger asChild>
-              <button className="w-full flex items-center justify-center gap-2 py-4 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-semibold transition-colors">
-                <Plus size={20} />
-                Registrar viaje
-              </button>
+            <DialogTrigger render={<button className="w-full flex items-center justify-center gap-2 py-4 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-semibold transition-colors" />}>
+              <Plus size={20} />
+              Registrar viaje
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
@@ -152,7 +150,7 @@ export function DriverDashboardClient({ driverName, activeShift, shiftTrips }: P
               <form onSubmit={handleLogTrip} className="space-y-4 pt-2">
                 <div className="space-y-1.5">
                   <Label>Plataforma</Label>
-                  <Select value={platform} onValueChange={setPlatform} required>
+                  <Select value={platform} onValueChange={(val) => setPlatform(val ?? "")} required>
                     <SelectTrigger><SelectValue placeholder="Selecciona plataforma" /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="uber">Uber</SelectItem>

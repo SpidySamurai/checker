@@ -21,7 +21,7 @@ export function AddVehicleDialog() {
     const result = await addVehicle(new FormData(e.currentTarget));
     setLoading(false);
     if ("error" in result) {
-      setError(result.error);
+      setError(result.error ?? null);
     } else {
       setOpen(false);
       formRef.current?.reset();
@@ -30,11 +30,9 @@ export function AddVehicleDialog() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button className="bg-orange-500 hover:bg-orange-600 text-white gap-1.5">
-          <Plus size={14} />
-          Agregar vehículo
-        </Button>
+      <DialogTrigger render={<Button className="bg-orange-500 hover:bg-orange-600 text-white gap-1.5" />}>
+        <Plus size={14} />
+        Agregar vehículo
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

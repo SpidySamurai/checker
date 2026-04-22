@@ -21,7 +21,7 @@ export function AddDriverDialog() {
     const result = await addDriver(new FormData(e.currentTarget));
     setLoading(false);
     if ("error" in result) {
-      setError(result.error);
+      setError(result.error ?? null);
     } else {
       setOpen(false);
       formRef.current?.reset();
@@ -30,11 +30,9 @@ export function AddDriverDialog() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button className="bg-orange-500 hover:bg-orange-600 text-white gap-1.5">
-          <Plus size={14} />
-          Agregar conductor
-        </Button>
+      <DialogTrigger render={<Button className="bg-orange-500 hover:bg-orange-600 text-white gap-1.5" />}>
+        <Plus size={14} />
+        Agregar conductor
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

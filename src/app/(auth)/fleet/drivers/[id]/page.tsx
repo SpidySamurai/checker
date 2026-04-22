@@ -81,6 +81,8 @@ export default async function DriverProfilePage({ params }: { params: Promise<{ 
     .limit(10);
 
   const fmt = new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN", maximumFractionDigits: 0 });
+  // eslint-disable-next-line react-hooks/purity -- server component: Date.now() runs once per request, not on re-render
+  const nowMs = Date.now();
 
   return (
     <div className="p-6 space-y-6">
@@ -147,7 +149,7 @@ export default async function DriverProfilePage({ params }: { params: Promise<{ 
               {(recentShifts ?? []).map((sh) => {
                 const inTime = new Date(sh.check_in);
                 const outTime = sh.check_out ? new Date(sh.check_out) : null;
-                const durMs = outTime ? outTime.getTime() - inTime.getTime() : Date.now() - inTime.getTime();
+                const durMs = outTime ? outTime.getTime() - inTime.getTime() : nowMs - inTime.getTime();
                 const durH = Math.floor(durMs / 3600000);
                 const durM = Math.floor((durMs % 3600000) / 60000);
                 return (
