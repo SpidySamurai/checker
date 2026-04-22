@@ -30,7 +30,7 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const { pathname } = request.nextUrl;
-  const isAuthRoute = pathname.startsWith("/driver") || pathname.startsWith("/fleet");
+  const isAuthRoute = pathname.startsWith("/driver") || pathname.startsWith("/fleet") || pathname.startsWith("/admin");
 
   if (isAuthRoute && !user) {
     return NextResponse.redirect(new URL("/login", request.url));
