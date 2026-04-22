@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import { DriverDashboardClient } from "./driver-dashboard-client";
 
 export default async function DriverPage() {
   const supabase = await createClient();
@@ -8,16 +9,43 @@ export default async function DriverPage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("name, role")
+    .select("name")
     .eq("id", user.id)
     .single();
-
   if (!profile) redirect("/onboarding");
 
+  // Active shift (check_in today with no check_out)
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const { data: activeShift } = await supabase
+    .from("attendance")
+    .select("id, check_in")
+    .eq("driver_id", user.id)
+    .gte("check_in", today.toISOString())
+    .is("check_out", null)
+    .maybeSingle();
+
+  // Trips in current shift
+  const { data: shiftTrips } = activeShift
+    ? await supabase
+        .from("trips")
+        .select("id, platform, net_amount, gross_amount, distance_km, created_at")
+        .eq("attendance_id", activeShift.id)
+        .order("created_at", { ascending: false })
+    : { data: [] };
+
   return (
-    <main className="p-6">
-      <h1 className="text-2xl font-bold">Driver Dashboard</h1>
-      <p className="text-slate-600 mt-1">Welcome, {profile.name}</p>
-    </main>
+    <DriverDashboardClient
+      driverName={profile.name}
+      activeShift={activeShift ? { id: activeShift.id, checkIn: activeShift.check_in } : null}
+      shiftTrips={(shiftTrips ?? []).map((t) => ({
+        id: t.id,
+        platform: t.platform,
+        netAmount: Number(t.net_amount),
+        grossAmount: Number(t.gross_amount),
+        distanceKm: t.distance_km ? Number(t.distance_km) : null,
+        createdAt: t.created_at,
+      }))}
+    />
   );
 }
