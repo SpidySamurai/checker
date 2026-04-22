@@ -38,17 +38,27 @@ export async function addDriver(formData: FormData) {
 
   const driverId = newUser.user.id;
 
-  await admin.from("profiles").insert({
+  const { error: profileError } = await admin.from("profiles").insert({
     id: driverId,
     name,
     role: "driver",
     status: "active",
   });
 
-  await admin.from("fleet_drivers").insert({
+  if (profileError) {
+    await admin.auth.admin.deleteUser(driverId);
+    return { error: profileError.message };
+  }
+
+  const { error: linkError } = await admin.from("fleet_drivers").insert({
     fleet_id: fleet.id,
     driver_id: driverId,
   });
+
+  if (linkError) {
+    await admin.auth.admin.deleteUser(driverId);
+    return { error: linkError.message };
+  }
 
   revalidatePath("/fleet/drivers");
   return { success: true };

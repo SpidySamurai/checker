@@ -9,13 +9,14 @@ export default async function DriverPage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("name")
+    .select("name, role")
     .eq("id", user.id)
     .single();
   if (!profile) redirect("/onboarding");
+  if (profile.role !== "driver") redirect("/fleet");
 
   // Active shift (check_in today with no check_out)
-  const today = new Date();
+  const today = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Mexico_City" }));
   today.setHours(0, 0, 0, 0);
   const { data: activeShift } = await supabase
     .from("attendance")

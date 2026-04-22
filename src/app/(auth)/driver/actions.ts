@@ -8,6 +8,19 @@ export async function checkIn() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { error: "No autenticado" };
 
+  // Guard: reject if open shift already exists today
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const { data: existing } = await supabase
+    .from("attendance")
+    .select("id")
+    .eq("driver_id", user.id)
+    .gte("check_in", today.toISOString())
+    .is("check_out", null)
+    .maybeSingle();
+
+  if (existing) return { error: "Ya tienes un turno activo" };
+
   const { error } = await supabase
     .from("attendance")
     .insert({ driver_id: user.id, check_in: new Date().toISOString() });

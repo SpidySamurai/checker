@@ -13,7 +13,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     .eq("id", user.id)
     .single();
 
-  if (profile?.role !== "admin") redirect("/fleet");
+  if (profile?.role !== "admin") redirect("/");
 
   return (
     <div className="flex h-screen bg-slate-50 dark:bg-slate-950">

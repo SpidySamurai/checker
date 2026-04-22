@@ -47,6 +47,7 @@ export function DriverDashboardClient({ driverName, activeShift, shiftTrips }: P
   const [loading, setLoading] = useState(false);
   const [tripOpen, setTripOpen] = useState(false);
   const [tripError, setTripError] = useState<string | null>(null);
+  const [shiftError, setShiftError] = useState<string | null>(null);
   const [platform, setPlatform] = useState("");
 
   const duration = useDuration(activeShift?.checkIn ?? null);
@@ -55,15 +56,19 @@ export function DriverDashboardClient({ driverName, activeShift, shiftTrips }: P
 
   async function handleCheckIn() {
     setLoading(true);
-    await checkIn();
+    setShiftError(null);
+    const result = await checkIn();
     setLoading(false);
+    if ("error" in result) setShiftError(result.error ?? null);
   }
 
   async function handleCheckOut() {
     if (!activeShift) return;
     setLoading(true);
-    await checkOut(activeShift.id);
+    setShiftError(null);
+    const result = await checkOut(activeShift.id);
     setLoading(false);
+    if ("error" in result) setShiftError(result.error ?? null);
   }
 
   async function handleLogTrip(e: React.FormEvent<HTMLFormElement>) {
@@ -185,6 +190,8 @@ export function DriverDashboardClient({ driverName, activeShift, shiftTrips }: P
             </DialogContent>
           </Dialog>
         )}
+
+        {shiftError && <p className="text-sm text-red-600 text-center">{shiftError}</p>}
 
         {/* Check in / out button */}
         <button

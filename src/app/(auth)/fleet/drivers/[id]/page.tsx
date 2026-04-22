@@ -36,7 +36,7 @@ export default async function DriverProfilePage({ params }: { params: Promise<{ 
   if (!profile) notFound();
 
   // Active today
-  const today = new Date();
+  const today = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Mexico_City" }));
   today.setHours(0, 0, 0, 0);
   const { data: activeShift } = await supabase
     .from("attendance")
@@ -47,8 +47,9 @@ export default async function DriverProfilePage({ params }: { params: Promise<{ 
     .maybeSingle();
 
   // Week stats
-  const weekStart = new Date();
-  weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+  const weekStart = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Mexico_City" }));
+  const dow = weekStart.getDay();
+  weekStart.setDate(weekStart.getDate() - (dow === 0 ? 6 : dow - 1));
   weekStart.setHours(0, 0, 0, 0);
 
   const { data: weekTrips } = await supabase

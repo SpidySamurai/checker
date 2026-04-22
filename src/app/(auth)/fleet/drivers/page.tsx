@@ -25,7 +25,7 @@ export default async function DriversPage() {
   const driverIds = (fleetDrivers ?? []).map((fd) => fd.driver_id);
 
   // Active today
-  const today = new Date();
+  const today = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Mexico_City" }));
   today.setHours(0, 0, 0, 0);
   const { data: activeAttendance } = driverIds.length
     ? await supabase
@@ -39,8 +39,9 @@ export default async function DriversPage() {
   const activeSet = new Set((activeAttendance ?? []).map((a) => a.driver_id));
 
   // Week trips per driver
-  const weekStart = new Date();
-  weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+  const weekStart = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Mexico_City" }));
+  const dow = weekStart.getDay();
+  weekStart.setDate(weekStart.getDate() - (dow === 0 ? 6 : dow - 1));
   weekStart.setHours(0, 0, 0, 0);
 
   const { data: weekTrips } = driverIds.length
