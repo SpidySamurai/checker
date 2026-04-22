@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { completeRegistration } from "./actions";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -24,40 +25,26 @@ export default function RegisterPage() {
     setLoading(true);
     setError(null);
     const supabase = createClient();
-    const trialEndsAt = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString();
 
-    const { data, error: signUpError } = await supabase.auth.signUp({
+    // 1. Create auth user (client-side is fine — just email+password)
+    const { error: signUpError } = await supabase.auth.signUp({
       email: form.email,
       password: form.password,
     });
-    if (signUpError || !data.user) {
-      setError(signUpError?.message ?? "Error al crear cuenta");
+    if (signUpError) {
+      setError(signUpError.message);
       setLoading(false);
       return;
     }
-    // Create profile and fleet
-    const { error: profileError } = await supabase.from("profiles").upsert({
-      id: data.user.id,
-      name: form.name,
-      company_name: form.company,
-      role: "fleet_owner",
-      status: "trial",
-      trial_ends_at: trialEndsAt,
-    });
-    if (profileError) {
-      setError(profileError.message);
+
+    // 2. Create profile + fleet server-side (role hardcoded in server action)
+    const result = await completeRegistration(form.name, form.company);
+    if ("error" in result) {
+      setError(result.error ?? null);
       setLoading(false);
       return;
     }
-    const { error: fleetError } = await supabase.from("fleets").insert({
-      name: form.company,
-      owner_id: data.user.id,
-    });
-    if (fleetError) {
-      setError(fleetError.message);
-      setLoading(false);
-      return;
-    }
+
     router.replace("/fleet");
   }
 
