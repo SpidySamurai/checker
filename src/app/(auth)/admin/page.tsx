@@ -9,6 +9,13 @@ export default async function AdminPage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
+  const { data: callerProfile } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single();
+  if (callerProfile?.role !== "admin") redirect("/");
+
   // All fleet owners
   const { data: owners } = await supabase
     .from("profiles")
