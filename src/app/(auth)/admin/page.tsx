@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { StatCard } from "@/components/checker/stat-card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { OwnerActions } from "./owner-actions";
 
 export default async function AdminPage() {
   const supabase = await createClient();
@@ -62,11 +63,12 @@ export default async function AdminPage() {
               <th className="px-4 py-3 text-left text-xs font-semibold text-muted-sk uppercase tracking-wide">Estado</th>
               <th className="px-4 py-3 text-left text-xs font-semibold text-muted-sk uppercase tracking-wide">Trial</th>
               <th className="px-4 py-3 text-left text-xs font-semibold text-muted-sk uppercase tracking-wide">Alta</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-muted-sk uppercase tracking-wide">Acciones</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
             {(!owners || owners.length === 0) && (
-              <tr><td colSpan={5} className="px-4 py-8 text-center text-muted-sk">Sin fleet owners registrados.</td></tr>
+              <tr><td colSpan={6} className="px-4 py-8 text-center text-muted-sk">Sin fleet owners registrados.</td></tr>
             )}
             {(owners ?? []).map((o) => {
               const days = trialDaysLeft(o.trial_ends_at);
@@ -93,6 +95,9 @@ export default async function AdminPage() {
                   </td>
                   <td className="px-4 py-3 text-muted-sk text-xs">
                     {new Date(o.created_at).toLocaleDateString("es-MX", { day: "numeric", month: "short", year: "numeric" })}
+                  </td>
+                  <td className="px-4 py-3">
+                    <OwnerActions ownerId={o.id} currentStatus={o.status} ownerName={o.name} />
                   </td>
                 </tr>
               );
