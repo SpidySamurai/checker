@@ -9,10 +9,10 @@ export function DriverStatusBadge({ active }: { active: boolean }) {
         "gap-1.5 font-medium",
         active
           ? "border-green-500/40 bg-green-50 text-green-700 dark:bg-green-950/20 dark:text-green-400"
-          : "border-slate-300 text-slate-500"
+          : "border-border text-muted-sk"
       )}
     >
-      <span className={cn("inline-block h-1.5 w-1.5 rounded-full", active ? "bg-green-500" : "bg-slate-400")} />
+      <span className={cn("inline-block h-1.5 w-1.5 rounded-full", active ? "bg-green-500" : "bg-muted-sk")} />
       {active ? "En turno" : "Libre"}
     </Badge>
   );

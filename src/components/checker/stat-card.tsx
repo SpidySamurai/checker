@@ -10,11 +10,11 @@ interface StatCardProps {
 
 export function StatCard({ label, value, sub, highlight }: StatCardProps) {
   return (
-    <Card className={cn(highlight && "border-orange-500/40 bg-orange-50 dark:bg-orange-950/20")}>
+    <Card className={cn(highlight && "border-accent-orange/40 bg-accent-soft dark:bg-accent-soft")}>
       <CardContent className="p-4 flex flex-col gap-1">
-        <span className="text-xs font-medium uppercase tracking-wide text-slate-500">{label}</span>
-        <span className="text-3xl font-bold text-slate-900 dark:text-slate-50">{value}</span>
-        {sub && <span className="text-xs text-slate-500">{sub}</span>}
+        <span className="text-xs font-medium uppercase tracking-wide text-muted-sk">{label}</span>
+        <span className="text-3xl font-bold text-ink">{value}</span>
+        {sub && <span className="text-xs text-muted-sk">{sub}</span>}
       </CardContent>
     </Card>
   );
