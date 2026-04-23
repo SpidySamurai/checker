@@ -21,7 +21,8 @@ export async function updateOwnerStatus(
   const { error } = await supabase
     .from("profiles")
     .update({ status })
-    .eq("id", ownerId);
+    .eq("id", ownerId)
+    .eq("role", "fleet_owner");
 
   if (error) return { error: error.message };
   revalidatePath("/admin");

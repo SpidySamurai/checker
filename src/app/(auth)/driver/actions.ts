@@ -8,8 +8,8 @@ export async function checkIn() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { error: "No autenticado" };
 
-  // Guard: reject if open shift already exists today
-  const today = new Date();
+  // Guard: reject if open shift already exists today (Mexico City timezone)
+  const today = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Mexico_City" }));
   today.setHours(0, 0, 0, 0);
   const { data: existing } = await supabase
     .from("attendance")
@@ -57,6 +57,13 @@ export async function logTrip(attendanceId: string, formData: FormData) {
   const distance    = Number(formData.get("distance"));
 
   if (!platform || !gross || !net) return { error: "Plataforma, bruto y neto son requeridos" };
+
+  const { data: shift } = await supabase
+    .from("attendance")
+    .select("driver_id")
+    .eq("id", attendanceId)
+    .single();
+  if (!shift || shift.driver_id !== user.id) return { error: "No autorizado" };
 
   const { error } = await supabase.from("trips").insert({
     driver_id: user.id,
