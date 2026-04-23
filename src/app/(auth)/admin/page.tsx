@@ -4,6 +4,8 @@ import { StatCard } from "@/components/checker/stat-card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { OwnerActions } from "./owner-actions";
+import { CreateOwnerDialog } from "./create-owner-dialog";
+import { EditOwnerDialog } from "./edit-owner-dialog";
 
 export default async function AdminPage() {
   const supabase = await createClient();
@@ -42,9 +44,12 @@ export default async function AdminPage() {
 
   return (
     <div className="p-4 md:p-6 space-y-4 md:space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-ink">Fleet owners</h1>
-        <p className="text-sm text-muted-sk mt-0.5">{total} cuentas · {onTrial} en trial</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-ink">Fleet owners</h1>
+          <p className="text-sm text-muted-sk mt-0.5">{total} cuentas · {onTrial} en trial</p>
+        </div>
+        <CreateOwnerDialog />
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4">
@@ -65,11 +70,12 @@ export default async function AdminPage() {
               <th className="px-4 py-3 text-left text-xs font-semibold text-muted-sk uppercase tracking-wide">Trial</th>
               <th className="px-4 py-3 text-left text-xs font-semibold text-muted-sk uppercase tracking-wide">Alta</th>
               <th className="px-4 py-3 text-left text-xs font-semibold text-muted-sk uppercase tracking-wide">Acciones</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-muted-sk uppercase tracking-wide">Editar</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
             {(!owners || owners.length === 0) && (
-              <tr><td colSpan={6} className="px-4 py-8 text-center text-muted-sk">Sin fleet owners registrados.</td></tr>
+              <tr><td colSpan={7} className="px-4 py-8 text-center text-muted-sk">Sin fleet owners registrados.</td></tr>
             )}
             {(owners ?? []).map((o) => {
               const days = trialDaysLeft(o.trial_ends_at);
@@ -99,6 +105,9 @@ export default async function AdminPage() {
                   </td>
                   <td className="px-4 py-3">
                     <OwnerActions ownerId={o.id} currentStatus={o.status} ownerName={o.name} />
+                  </td>
+                  <td className="px-4 py-3">
+                    <EditOwnerDialog owner={{ id: o.id, name: o.name, company_name: o.company_name, status: o.status, trial_ends_at: o.trial_ends_at }} />
                   </td>
                 </tr>
               );
