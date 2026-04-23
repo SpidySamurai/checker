@@ -30,10 +30,19 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const { pathname } = request.nextUrl;
-  const isAuthRoute = pathname.startsWith("/driver") || pathname.startsWith("/fleet") || pathname.startsWith("/admin");
 
-  if (isAuthRoute && !user) {
+  // Protected routes — require session
+  const isProtectedRoute = pathname.startsWith("/driver") || pathname.startsWith("/fleet") || pathname.startsWith("/admin");
+  if (isProtectedRoute && !user) {
     return NextResponse.redirect(new URL("/login", request.url));
+  }
+
+  // Guest-only routes — redirect authenticated users to their dashboard
+  const isGuestRoute = ["/login", "/register", "/forgot-password", "/onboarding"].some(
+    (p) => pathname.startsWith(p)
+  );
+  if (isGuestRoute && user) {
+    return NextResponse.redirect(new URL("/", request.url));
   }
 
   return supabaseResponse;
