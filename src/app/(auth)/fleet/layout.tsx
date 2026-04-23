@@ -17,7 +17,7 @@ export default async function FleetLayout({ children }: { children: React.ReactN
   if (profile.role !== "fleet_owner") redirect("/driver");
 
   return (
-    <div className="flex h-screen bg-slate-50 dark:bg-slate-950">
+    <div className="flex h-screen bg-canvas">
       <Sidebar
         userName={profile.name}
         companyName={profile.company_name ?? "Mi flotilla"}
