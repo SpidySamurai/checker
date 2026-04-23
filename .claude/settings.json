@@ -4,8 +4,6 @@
       "Bash(git add *)",
       "Bash(git commit *)",
       "Bash(git stash *)",
-      "Bash(npx vercel --prod)",
-      "Bash(npx vercel *)",
       "Bash(pnpm lint)",
       "Bash(pnpm build)",
       "Bash(claude plugins *)",
@@ -15,7 +13,6 @@
       "mcp__supabase__list_migrations",
       "mcp__supabase__get_logs",
       "mcp__supabase__generate_typescript_types",
-      "mcp__plugin_vercel_vercel__deploy_to_vercel",
       "mcp__plugin_vercel_vercel__list_deployments",
       "mcp__plugin_vercel_vercel__get_deployment",
       "mcp__plugin_vercel_vercel__get_deployment_build_logs",
@@ -24,7 +21,9 @@
       "mcp__plugin_vercel_vercel__list_projects"
     ],
     "deny": [
-      "Bash(git push *)"
+      "Bash(git push *)",
+      "Bash(npx vercel *)",
+      "mcp__plugin_vercel_vercel__deploy_to_vercel"
     ]
   }
 }
