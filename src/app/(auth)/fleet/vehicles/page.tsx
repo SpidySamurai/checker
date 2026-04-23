@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 
 const STATUS_LABELS: Record<string, { label: string; className: string }> = {
   available: { label: "Disponible", className: "border-green-500/40 bg-green-50 text-green-700 dark:bg-green-950/20 dark:text-green-400" },
-  in_use:    { label: "En uso",     className: "border-orange-500/40 bg-orange-50 text-orange-700 dark:bg-orange-950/20 dark:text-orange-400" },
+  in_use:    { label: "En uso",     className: "border-accent-orange/40 bg-accent-soft text-primary dark:bg-accent-soft" },
   workshop:  { label: "Taller",     className: "border-border text-muted-sk" },
 };
 
