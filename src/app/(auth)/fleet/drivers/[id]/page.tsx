@@ -6,6 +6,7 @@ import { PlatformBadge } from "@/components/checker/platform-badge";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { RemoveDriverButton } from "./remove-driver-button";
+import { VehicleAssignSelect } from "./vehicle-assign-select";
 
 export default async function DriverProfilePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -20,6 +21,21 @@ export default async function DriverProfilePage({ params }: { params: Promise<{ 
     .eq("owner_id", user.id)
     .single();
   if (!fleet) redirect("/fleet");
+
+  // Fleet vehicles for assignment dropdown
+  const { data: fleetVehicles } = await supabase
+    .from("vehicles")
+    .select("id, plate, make, model")
+    .eq("fleet_id", fleet.id)
+    .order("plate");
+
+  // Current vehicle assignment
+  const { data: assignment } = await supabase
+    .from("fleet_drivers")
+    .select("vehicle_id")
+    .eq("fleet_id", fleet.id)
+    .eq("driver_id", id)
+    .single();
 
   const { data: membership } = await supabase
     .from("fleet_drivers")
@@ -114,6 +130,15 @@ export default async function DriverProfilePage({ params }: { params: Promise<{ 
         <StatCard label="Viajes sem." value={String(totalTrips)} sub={`${(totalTrips / 7).toFixed(1)} / día`} />
         <StatCard label="Ganancias" value={fmt.format(weekEarnings)} sub="neto MXN" highlight />
         <StatCard label="Km" value={weekKm.toFixed(0)} sub="esta semana" />
+      </div>
+
+      {/* Vehicle assignment */}
+      <div className="border border-border rounded-lg p-4">
+        <VehicleAssignSelect
+          driverId={id}
+          currentVehicleId={(assignment as { vehicle_id: string | null } | null)?.vehicle_id ?? null}
+          vehicles={fleetVehicles ?? []}
+        />
       </div>
 
       {/* Trips by platform */}
