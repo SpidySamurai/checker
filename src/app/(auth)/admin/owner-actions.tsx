@@ -5,7 +5,7 @@ import { updateOwnerStatus } from "./actions";
 
 interface Props {
   ownerId: string;
-  currentStatus: string;
+  currentStatus: "active" | "suspended" | "trial";
   ownerName: string;
 }
 
@@ -16,14 +16,17 @@ export function OwnerActions({ ownerId, currentStatus, ownerName }: Props) {
   async function handle(status: "active" | "suspended") {
     setLoading(true);
     setError(null);
-    const result = await updateOwnerStatus(ownerId, status);
-    setLoading(false);
-    if (result?.error) setError(result.error);
+    try {
+      const result = await updateOwnerStatus(ownerId, status);
+      if (result?.error) setError(result.error);
+    } finally {
+      setLoading(false);
+    }
   }
 
-  return (
-    <div className="flex items-center gap-1.5">
-      {currentStatus === "trial" && (
+  if (currentStatus === "trial") {
+    return (
+      <div className="flex items-center gap-1.5">
         <button
           onClick={() => handle("active")}
           disabled={loading}
@@ -31,8 +34,15 @@ export function OwnerActions({ ownerId, currentStatus, ownerName }: Props) {
         >
           Activar
         </button>
-      )}
-      {currentStatus === "active" && (
+        {loading && <span className="text-xs text-muted-sk">…</span>}
+        {error && <span className="text-xs text-destructive">{error}</span>}
+      </div>
+    );
+  }
+
+  if (currentStatus === "active") {
+    return (
+      <div className="flex items-center gap-1.5">
         <button
           onClick={() => handle("suspended")}
           disabled={loading}
@@ -41,8 +51,15 @@ export function OwnerActions({ ownerId, currentStatus, ownerName }: Props) {
         >
           Suspender
         </button>
-      )}
-      {currentStatus === "suspended" && (
+        {loading && <span className="text-xs text-muted-sk">…</span>}
+        {error && <span className="text-xs text-destructive">{error}</span>}
+      </div>
+    );
+  }
+
+  if (currentStatus === "suspended") {
+    return (
+      <div className="flex items-center gap-1.5">
         <button
           onClick={() => handle("active")}
           disabled={loading}
@@ -50,9 +67,11 @@ export function OwnerActions({ ownerId, currentStatus, ownerName }: Props) {
         >
           Reactivar
         </button>
-      )}
-      {loading && <span className="text-xs text-muted-sk">…</span>}
-      {error && <span className="text-xs text-destructive">{error}</span>}
-    </div>
-  );
+        {loading && <span className="text-xs text-muted-sk">…</span>}
+        {error && <span className="text-xs text-destructive">{error}</span>}
+      </div>
+    );
+  }
+
+  return null;
 }
