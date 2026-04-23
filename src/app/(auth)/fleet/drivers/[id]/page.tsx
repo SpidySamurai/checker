@@ -5,6 +5,7 @@ import { StatCard } from "@/components/checker/stat-card";
 import { PlatformBadge } from "@/components/checker/platform-badge";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { RemoveDriverButton } from "./remove-driver-button";
 
 export default async function DriverProfilePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -104,6 +105,7 @@ export default async function DriverProfilePage({ params }: { params: Promise<{ 
             <DriverStatusBadge active={!!activeShift} />
           </div>
         </div>
+        <RemoveDriverButton driverId={id} driverName={profile.name} />
       </div>
 
       {/* Stats */}
