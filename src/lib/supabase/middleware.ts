@@ -37,6 +37,18 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
+  // Admin routes require role = "admin"
+  if (pathname.startsWith("/admin") && user) {
+    const { data: adminProfile } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", user.id)
+      .single();
+    if (adminProfile?.role !== "admin") {
+      return NextResponse.redirect(new URL("/", request.url));
+    }
+  }
+
   // Guest-only routes — redirect authenticated users to their dashboard
   const isGuestRoute = ["/login", "/register", "/forgot-password", "/onboarding"].some(
     (p) => pathname.startsWith(p)
