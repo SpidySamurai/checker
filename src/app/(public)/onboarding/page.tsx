@@ -1,55 +1,64 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
+import { completeOnboarding } from "./actions";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 
 export default function OnboardingPage() {
-  const router = useRouter();
   const [name, setName] = useState("");
-  const [role, setRole] = useState<"driver" | "fleet_owner">("driver");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    const supabase = createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-
-    await supabase.from("profiles").upsert({ id: user.id, name, role });
-
-    router.replace(role === "driver" ? "/driver" : "/fleet");
+    setError(null);
+    const result = await completeOnboarding(name);
+    if (result?.error) {
+      setError(result.error);
+      setLoading(false);
+    }
+    // redirect("/driver") called inside server action on success
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center">
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-full max-w-sm">
-        <h1 className="text-xl font-bold">Welcome! Set up your account</h1>
-        <input
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="Your name"
-          required
-          className="border rounded px-3 py-2"
-        />
-        <select
-          value={role}
-          onChange={(e) => setRole(e.target.value as "driver" | "fleet_owner")}
-          className="border rounded px-3 py-2"
-        >
-          <option value="driver">Driver</option>
-          <option value="fleet_owner">Fleet owner</option>
-        </select>
-        <button
-          type="submit"
-          disabled={loading}
-          className="bg-slate-900 text-white rounded px-4 py-2 disabled:opacity-50"
-        >
-          {loading ? "Saving…" : "Continue"}
-        </button>
-      </form>
+    <main className="min-h-screen flex items-center justify-center bg-background px-6">
+      <div className="w-full max-w-sm space-y-7">
+        <div className="flex items-center gap-2">
+          <div className="h-7 w-7 rounded-md bg-primary flex items-center justify-center text-primary-foreground font-bold text-xs">✓</div>
+          <span className="font-bold text-foreground">Checker</span>
+        </div>
+
+        <div>
+          <h2 className="text-3xl font-bold text-foreground">¡Bienvenido!</h2>
+          <p className="text-base text-foreground/80 mt-1">
+            Cuéntanos tu nombre para empezar.
+          </p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-1.5">
+            <Label htmlFor="name" className="text-base font-medium">Tu nombre</Label>
+            <Input
+              id="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Juan Pérez"
+              required
+              autoFocus
+              className="h-12 text-base px-4 rounded-xl shadow-sm border-border bg-card"
+            />
+          </div>
+
+          {error && <p className="text-sm text-destructive">{error}</p>}
+
+          <Button type="submit" className="w-full" size="lg" disabled={loading}>
+            {loading ? "Guardando…" : "Continuar"}
+          </Button>
+        </form>
+      </div>
     </main>
   );
 }
