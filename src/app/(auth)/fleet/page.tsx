@@ -33,43 +33,38 @@ export default async function FleetDashboardPage() {
 
   const driverIds = (fleetDrivers ?? []).map((fd) => fd.driver_id);
 
-  // Active today: attendance with no check_out
   const today = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Mexico_City" }));
   today.setHours(0, 0, 0, 0);
-  const { data: activeAttendance } = driverIds.length
-    ? await supabase
-        .from("attendance")
-        .select("driver_id")
-        .in("driver_id", driverIds)
-        .gte("check_in", today.toISOString())
-        .is("check_out", null)
-    : { data: [] };
-
-  const activeDriverIds = new Set((activeAttendance ?? []).map((a) => a.driver_id));
-
-  // This week trips + earnings
   const weekStart = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Mexico_City" }));
   const dow = weekStart.getDay();
   weekStart.setDate(weekStart.getDate() - (dow === 0 ? 6 : dow - 1));
   weekStart.setHours(0, 0, 0, 0);
 
-  const { data: weekTrips } = driverIds.length
-    ? await supabase
-        .from("trips")
-        .select("net_amount")
-        .in("driver_id", driverIds)
-        .gte("created_at", weekStart.toISOString())
-    : { data: [] };
+  // All three in parallel — none depend on each other
+  const [
+    { data: activeAttendance },
+    { data: weekTrips },
+    { data: vehicles },
+  ] = await Promise.all([
+    driverIds.length
+      ? supabase.from("attendance").select("driver_id")
+          .in("driver_id", driverIds)
+          .gte("check_in", today.toISOString())
+          .is("check_out", null)
+      : { data: [] },
+    driverIds.length
+      ? supabase.from("trips").select("net_amount")
+          .in("driver_id", driverIds)
+          .gte("created_at", weekStart.toISOString())
+      : { data: [] },
+    supabase.from("vehicles").select("id, plate, make, model, status")
+      .eq("fleet_id", fleet.id)
+      .limit(5),
+  ]);
 
+  const activeDriverIds = new Set((activeAttendance ?? []).map((a) => a.driver_id));
   const tripsCount = weekTrips?.length ?? 0;
   const weekEarnings = (weekTrips ?? []).reduce((sum, t) => sum + Number(t.net_amount), 0);
-
-  // Vehicles
-  const { data: vehicles } = await supabase
-    .from("vehicles")
-    .select("id, plate, make, model, status")
-    .eq("fleet_id", fleet.id)
-    .limit(5);
 
   const drivers = (fleetDrivers ?? []).map((fd) => ({
     id: fd.driver_id,
