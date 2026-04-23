@@ -29,12 +29,13 @@ export default async function DriverProfilePage({ params }: { params: Promise<{ 
     .eq("fleet_id", fleet.id)
     .order("plate");
 
-  // Current vehicle assignment
+  // Current vehicle assignment (only active membership)
   const { data: assignment } = await supabase
     .from("fleet_drivers")
     .select("vehicle_id")
     .eq("fleet_id", fleet.id)
     .eq("driver_id", id)
+    .is("deleted_at", null)
     .single();
 
   const { data: membership } = await supabase
@@ -42,6 +43,7 @@ export default async function DriverProfilePage({ params }: { params: Promise<{ 
     .select("driver_id")
     .eq("fleet_id", fleet.id)
     .eq("driver_id", id)
+    .is("deleted_at", null)
     .single();
   if (!membership) notFound();
 

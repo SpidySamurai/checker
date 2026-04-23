@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import { revalidatePath } from "next/cache";
+import { logAudit } from "@/lib/audit";
 
 async function assertAdmin() {
   const supabase = await createClient();
@@ -28,6 +29,8 @@ export async function updateOwnerStatus(
     .eq("role", "fleet_owner");
 
   if (error) return { error: error.message };
+
+  await logAudit(`fleet_owner.${status}`, "profiles", ownerId, { status });
   revalidatePath("/admin");
   return {};
 }
@@ -45,7 +48,6 @@ export async function createFleetOwner(formData: FormData): Promise<{ error?: st
 
   const service = createServiceClient();
 
-  // Create auth user via invite (sends welcome email with password setup link)
   const { data: invited, error: inviteError } = await service.auth.admin.inviteUserByEmail(email, {
     data: { name, company_name: company },
     redirectTo: `${process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"}/auth/callback?next=/fleet`,
@@ -55,7 +57,6 @@ export async function createFleetOwner(formData: FormData): Promise<{ error?: st
 
   const trialEndsAt = new Date(Date.now() + trialDays * 24 * 60 * 60 * 1000).toISOString();
 
-  // Create profile
   const { error: profileError } = await service.from("profiles").insert({
     id: invited.user.id,
     name,
@@ -69,13 +70,13 @@ export async function createFleetOwner(formData: FormData): Promise<{ error?: st
     return { error: profileError.message };
   }
 
-  // Create fleet
   const { error: fleetError } = await service.from("fleets").insert({
     name: company,
     owner_id: invited.user.id,
   });
   if (fleetError) return { error: fleetError.message };
 
+  await logAudit("fleet_owner.invite", "profiles", invited.user.id, { email, name, company, trial_days: trialDays });
   revalidatePath("/admin");
   return {};
 }
@@ -96,11 +97,11 @@ export async function updateFleetOwner(
 
   if (error) return { error: error.message };
 
-  // Sync fleet name if company changed
   if (data.company_name) {
     await supabase.from("fleets").update({ name: data.company_name }).eq("owner_id", ownerId);
   }
 
+  await logAudit("fleet_owner.update", "profiles", ownerId, data as Record<string, unknown>);
   revalidatePath("/admin");
   return {};
 }
@@ -129,6 +130,8 @@ export async function extendTrial(ownerId: string, days: number): Promise<{ erro
     .eq("role", "fleet_owner");
 
   if (error) return { error: error.message };
+
+  await logAudit("fleet_owner.extend_trial", "profiles", ownerId, { days, new_trial_ends_at: base.toISOString() });
   revalidatePath("/admin");
   return {};
 }

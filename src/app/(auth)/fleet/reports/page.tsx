@@ -34,7 +34,8 @@ export default async function ReportsPage() {
   const { data: fleetDrivers } = await supabase
     .from("fleet_drivers")
     .select("driver_id")
-    .eq("fleet_id", fleet.id);
+    .eq("fleet_id", fleet.id)
+    .is("deleted_at", null);
 
   const driverIds = (fleetDrivers ?? []).map((fd) => fd.driver_id);
 

@@ -2,13 +2,13 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+import { logAudit } from "@/lib/audit";
 
 export async function checkIn() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { error: "No autenticado" };
 
-  // Guard: reject if open shift already exists today (Mexico City timezone)
   const today = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Mexico_City" }));
   today.setHours(0, 0, 0, 0);
   const { data: existing } = await supabase
@@ -51,10 +51,10 @@ export async function logTrip(attendanceId: string, formData: FormData) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { error: "No autenticado" };
 
-  const platform    = formData.get("platform")     as string;
-  const gross       = Number(formData.get("gross"));
-  const net         = Number(formData.get("net"));
-  const distance    = Number(formData.get("distance"));
+  const platform = formData.get("platform") as string;
+  const gross    = Number(formData.get("gross"));
+  const net      = Number(formData.get("net"));
+  const distance = Number(formData.get("distance"));
 
   if (!platform || !gross || !net) return { error: "Plataforma, bruto y neto son requeridos" };
 
@@ -92,8 +92,15 @@ export async function deleteTrip(tripId: string): Promise<{ error?: string }> {
 
   if (!trip || trip.driver_id !== user.id) return { error: "No autorizado" };
 
-  const { error } = await supabase.from("trips").delete().eq("id", tripId);
+  const { error } = await supabase
+    .from("trips")
+    .update({ deleted_at: new Date().toISOString() })
+    .eq("id", tripId)
+    .eq("driver_id", user.id);
+
   if (error) return { error: error.message };
+
+  await logAudit("trip.delete", "trips", tripId, {});
   revalidatePath("/driver");
   return {};
 }
