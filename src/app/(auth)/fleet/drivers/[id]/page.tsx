@@ -88,18 +88,18 @@ export default async function DriverProfilePage({ params }: { params: Promise<{ 
   return (
     <div className="p-6 space-y-6">
       {/* Back nav */}
-      <Link href="/fleet/drivers" className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-900 dark:hover:text-slate-50 w-fit">
+      <Link href="/fleet/drivers" className="flex items-center gap-1.5 text-sm text-muted-sk hover:text-ink w-fit">
         <ArrowLeft size={14} />
         Conductores
       </Link>
 
       {/* Header */}
-      <div className="flex items-center gap-4 pb-4 border-b border-slate-200 dark:border-slate-800">
-        <div className="h-14 w-14 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-xl font-bold text-slate-600 dark:text-slate-300">
+      <div className="flex items-center gap-4 pb-4 border-b border-border">
+        <div className="h-14 w-14 rounded-full bg-hatch flex items-center justify-center text-xl font-bold text-ink/70">
           {profile.name[0]?.toUpperCase()}
         </div>
         <div className="flex-1">
-          <h1 className="text-xl font-bold text-slate-900 dark:text-slate-50">{profile.name}</h1>
+          <h1 className="text-xl font-bold text-ink">{profile.name}</h1>
           <div className="flex items-center gap-3 mt-1">
             <DriverStatusBadge active={!!activeShift} />
           </div>
@@ -117,13 +117,13 @@ export default async function DriverProfilePage({ params }: { params: Promise<{ 
       {/* Trips by platform */}
       {(weekTrips ?? []).length > 0 && (
         <div>
-          <h2 className="font-semibold text-sm text-slate-900 dark:text-slate-50 mb-3">Plataformas esta semana</h2>
+          <h2 className="font-semibold text-sm text-ink mb-3">Plataformas esta semana</h2>
           <div className="flex gap-3">
             {(["uber","didi","cabify","indrive"] as const).map((p) => {
               const pTrips = (weekTrips ?? []).filter((t) => t.platform === p);
               if (!pTrips.length) return null;
               return (
-                <div key={p} className="flex items-center gap-2 px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-md">
+                <div key={p} className="flex items-center gap-2 px-3 py-2 border border-border rounded-md">
                   <PlatformBadge platform={p} size="sm" />
                   <span className="text-sm font-semibold">{pTrips.length} viajes</span>
                 </div>
@@ -135,18 +135,18 @@ export default async function DriverProfilePage({ params }: { params: Promise<{ 
 
       {/* Shift history */}
       <div>
-        <h2 className="font-semibold text-sm text-slate-900 dark:text-slate-50 mb-3">Historial de turnos</h2>
-        <div className="border border-slate-200 dark:border-slate-800 rounded-lg overflow-hidden">
+        <h2 className="font-semibold text-sm text-ink mb-3">Historial de turnos</h2>
+        <div className="border border-border rounded-lg overflow-hidden">
           <table className="w-full text-sm">
-            <thead className="bg-slate-50 dark:bg-slate-800/50">
-              <tr className="border-b border-slate-200 dark:border-slate-700">
-                <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Fecha</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Duración</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Check in</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Check out</th>
+            <thead className="bg-canvas">
+              <tr className="border-b border-border">
+                <th className="px-4 py-3 text-left text-xs font-semibold text-muted-sk uppercase tracking-wide">Fecha</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-muted-sk uppercase tracking-wide">Duración</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-muted-sk uppercase tracking-wide">Check in</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-muted-sk uppercase tracking-wide">Check out</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+            <tbody className="divide-y divide-border">
               {(recentShifts ?? []).map((sh) => {
                 const inTime = new Date(sh.check_in);
                 const outTime = sh.check_out ? new Date(sh.check_out) : null;
@@ -154,24 +154,24 @@ export default async function DriverProfilePage({ params }: { params: Promise<{ 
                 const durH = Math.floor(durMs / 3600000);
                 const durM = Math.floor((durMs % 3600000) / 60000);
                 return (
-                  <tr key={sh.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/30">
-                    <td className="px-4 py-3 text-slate-700 dark:text-slate-300">
+                  <tr key={sh.id} className="hover:bg-tint">
+                    <td className="px-4 py-3 text-ink/70">
                       {inTime.toLocaleDateString("es-MX", { weekday: "short", day: "numeric", month: "short" })}
                     </td>
-                    <td className="px-4 py-3 font-mono text-slate-700 dark:text-slate-300">
+                    <td className="px-4 py-3 font-mono text-ink/70">
                       {durH}h {durM}m{!outTime ? " (en curso)" : ""}
                     </td>
-                    <td className="px-4 py-3 text-slate-700 dark:text-slate-300">
+                    <td className="px-4 py-3 text-ink/70">
                       {inTime.toLocaleTimeString("es-MX", { hour: "2-digit", minute: "2-digit" })}
                     </td>
-                    <td className="px-4 py-3 text-slate-700 dark:text-slate-300">
-                      {outTime ? outTime.toLocaleTimeString("es-MX", { hour: "2-digit", minute: "2-digit" }) : <span className="text-orange-500 font-medium">Activo</span>}
+                    <td className="px-4 py-3 text-ink/70">
+                      {outTime ? outTime.toLocaleTimeString("es-MX", { hour: "2-digit", minute: "2-digit" }) : <span className="text-primary font-medium">Activo</span>}
                     </td>
                   </tr>
                 );
               })}
               {!recentShifts?.length && (
-                <tr><td colSpan={4} className="px-4 py-8 text-center text-slate-500">Sin turnos registrados.</td></tr>
+                <tr><td colSpan={4} className="px-4 py-8 text-center text-muted-sk">Sin turnos registrados.</td></tr>
               )}
             </tbody>
           </table>

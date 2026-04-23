@@ -42,8 +42,8 @@ export default async function AdminPage() {
   return (
     <div className="p-6 space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-50">Fleet owners</h1>
-        <p className="text-sm text-slate-500 mt-0.5">{total} cuentas · {onTrial} en trial</p>
+        <h1 className="text-2xl font-bold text-ink">Fleet owners</h1>
+        <p className="text-sm text-muted-sk mt-0.5">{total} cuentas · {onTrial} en trial</p>
       </div>
 
       <div className="grid grid-cols-4 gap-4">
@@ -53,27 +53,27 @@ export default async function AdminPage() {
         <StatCard label="MRR" value="—" sub="pendiente de billing" />
       </div>
 
-      <div className="border border-slate-200 dark:border-slate-800 rounded-lg overflow-hidden">
+      <div className="border border-border rounded-lg overflow-hidden">
         <table className="w-full text-sm">
-          <thead className="bg-slate-50 dark:bg-slate-800/50">
-            <tr className="border-b border-slate-200 dark:border-slate-700">
-              <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Empresa</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Nombre</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Estado</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Trial</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Alta</th>
+          <thead className="bg-canvas">
+            <tr className="border-b border-border">
+              <th className="px-4 py-3 text-left text-xs font-semibold text-muted-sk uppercase tracking-wide">Empresa</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-muted-sk uppercase tracking-wide">Nombre</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-muted-sk uppercase tracking-wide">Estado</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-muted-sk uppercase tracking-wide">Trial</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-muted-sk uppercase tracking-wide">Alta</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+          <tbody className="divide-y divide-border">
             {(!owners || owners.length === 0) && (
-              <tr><td colSpan={5} className="px-4 py-8 text-center text-slate-500">Sin fleet owners registrados.</td></tr>
+              <tr><td colSpan={5} className="px-4 py-8 text-center text-muted-sk">Sin fleet owners registrados.</td></tr>
             )}
             {(owners ?? []).map((o) => {
               const days = trialDaysLeft(o.trial_ends_at);
               return (
-                <tr key={o.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/30">
-                  <td className="px-4 py-3 font-medium text-slate-900 dark:text-slate-50">{o.company_name ?? "—"}</td>
-                  <td className="px-4 py-3 text-slate-700 dark:text-slate-300">{o.name}</td>
+                <tr key={o.id} className="hover:bg-tint">
+                  <td className="px-4 py-3 font-medium text-ink">{o.company_name ?? "—"}</td>
+                  <td className="px-4 py-3 text-ink/70">{o.name}</td>
                   <td className="px-4 py-3">
                     <Badge variant="outline" className={cn(
                       "font-medium",
@@ -84,14 +84,14 @@ export default async function AdminPage() {
                       {o.status}
                     </Badge>
                   </td>
-                  <td className="px-4 py-3 text-slate-700 dark:text-slate-300">
+                  <td className="px-4 py-3 text-ink/70">
                     {days !== null ? (
                       <span className={cn(days < 3 && "text-red-600 font-semibold", days < 7 && days >= 3 && "text-orange-600 font-medium")}>
                         {days > 0 ? `${days}d restantes` : "Vencido"}
                       </span>
                     ) : "—"}
                   </td>
-                  <td className="px-4 py-3 text-slate-500 text-xs">
+                  <td className="px-4 py-3 text-muted-sk text-xs">
                     {new Date(o.created_at).toLocaleDateString("es-MX", { day: "numeric", month: "short", year: "numeric" })}
                   </td>
                 </tr>

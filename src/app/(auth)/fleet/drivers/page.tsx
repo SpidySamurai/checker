@@ -71,8 +71,8 @@ export default async function DriversPage() {
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-50">Conductores</h1>
-          <p className="text-sm text-slate-500 mt-0.5">{drivers.length} conductores</p>
+          <h1 className="text-2xl font-bold text-ink">Conductores</h1>
+          <p className="text-sm text-muted-sk mt-0.5">{drivers.length} conductores</p>
         </div>
         <AddDriverDialog />
       </div>
@@ -80,9 +80,9 @@ export default async function DriversPage() {
       {/* Filters row */}
       <div className="flex items-center gap-3">
         <div className="relative">
-          <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
+          <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-sk" />
           <input
-            className="pl-8 pr-3 py-1.5 border border-slate-200 dark:border-slate-700 rounded-md text-sm bg-white dark:bg-slate-900 w-64 placeholder:text-slate-400"
+            className="pl-8 pr-3 py-1.5 border border-border rounded-md text-sm bg-paper w-64 placeholder:text-muted-sk"
             placeholder="Buscar por nombre…"
             readOnly
           />
@@ -90,37 +90,37 @@ export default async function DriversPage() {
       </div>
 
       {/* Table */}
-      <div className="border border-slate-200 dark:border-slate-800 rounded-lg overflow-hidden">
+      <div className="border border-border rounded-lg overflow-hidden">
         <table className="w-full text-sm">
-          <thead className="bg-slate-50 dark:bg-slate-800/50">
-            <tr className="border-b border-slate-200 dark:border-slate-700">
-              <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Nombre</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Estado</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Viajes sem.</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Ganancias</th>
+          <thead className="bg-canvas">
+            <tr className="border-b border-border">
+              <th className="px-4 py-3 text-left text-xs font-semibold text-muted-sk uppercase tracking-wide">Nombre</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-muted-sk uppercase tracking-wide">Estado</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-muted-sk uppercase tracking-wide">Viajes sem.</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-muted-sk uppercase tracking-wide">Ganancias</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+          <tbody className="divide-y divide-border">
             {drivers.length === 0 && (
               <tr>
-                <td colSpan={4} className="px-4 py-8 text-center text-slate-500">
+                <td colSpan={4} className="px-4 py-8 text-center text-muted-sk">
                   Sin conductores. Agrega uno con el botón de arriba.
                 </td>
               </tr>
             )}
             {drivers.map((d) => (
-              <tr key={d.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
+              <tr key={d.id} className="hover:bg-tint transition-colors">
                 <td className="px-4 py-3">
-                  <Link href={`/fleet/drivers/${d.id}`} className="flex items-center gap-2.5 hover:text-orange-600">
-                    <div className="h-8 w-8 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-xs font-bold shrink-0">
+                  <Link href={`/fleet/drivers/${d.id}`} className="flex items-center gap-2.5 hover:text-primary">
+                    <div className="h-8 w-8 rounded-full bg-hatch flex items-center justify-center text-xs font-bold shrink-0">
                       {d.name[0]?.toUpperCase()}
                     </div>
-                    <span className="font-medium text-slate-900 dark:text-slate-50">{d.name}</span>
+                    <span className="font-medium text-ink">{d.name}</span>
                   </Link>
                 </td>
                 <td className="px-4 py-3"><DriverStatusBadge active={d.active} /></td>
-                <td className="px-4 py-3 text-slate-700 dark:text-slate-300">{d.trips}</td>
-                <td className="px-4 py-3 font-semibold text-slate-900 dark:text-slate-50">{fmt.format(d.earnings)}</td>
+                <td className="px-4 py-3 text-ink/70">{d.trips}</td>
+                <td className="px-4 py-3 font-semibold text-ink">{fmt.format(d.earnings)}</td>
               </tr>
             ))}
           </tbody>
