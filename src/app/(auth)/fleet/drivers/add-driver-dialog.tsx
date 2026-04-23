@@ -12,6 +12,7 @@ export function AddDriverDialog() {
   const [open, setOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [sent, setSent] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -23,42 +24,48 @@ export function AddDriverDialog() {
     if ("error" in result) {
       setError(result.error ?? null);
     } else {
-      setOpen(false);
-      formRef.current?.reset();
+      setSent(true);
+      setTimeout(() => { setOpen(false); setSent(false); formRef.current?.reset(); }, 1800);
     }
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger render={<Button className="bg-orange-500 hover:bg-orange-600 text-white gap-1.5" />}>
+    <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) { setSent(false); setError(null); } }}>
+      <DialogTrigger render={<Button className="gap-1.5" />}>
         <Plus size={14} />
         Agregar conductor
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Nuevo conductor</DialogTitle>
+          <DialogTitle>Invitar conductor</DialogTitle>
         </DialogHeader>
-        <form ref={formRef} onSubmit={handleSubmit} className="space-y-4 pt-2">
-          <div className="space-y-1.5">
-            <Label htmlFor="add-name">Nombre completo</Label>
-            <Input id="add-name" name="name" placeholder="Carlos Mendoza" required />
+
+        {sent ? (
+          <div className="py-6 text-center text-primary font-medium text-sm">
+            ✓ Invitación enviada — el conductor recibirá un email para crear su contraseña.
           </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="add-email">Email</Label>
-            <Input id="add-email" name="email" type="email" placeholder="carlos@correo.com" required />
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="add-password">Contraseña temporal</Label>
-            <Input id="add-password" name="password" type="password" placeholder="mín. 8 caracteres" minLength={8} required />
-          </div>
-          {error && <p className="text-sm text-red-600">{error}</p>}
-          <div className="flex justify-end gap-2 pt-2">
-            <Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancelar</Button>
-            <Button type="submit" className="bg-orange-500 hover:bg-orange-600 text-white" disabled={loading}>
-              {loading ? "Creando…" : "Crear conductor"}
-            </Button>
-          </div>
-        </form>
+        ) : (
+          <form ref={formRef} onSubmit={handleSubmit} className="space-y-4 pt-2">
+            <p className="text-sm text-muted-foreground">
+              El conductor recibirá un email para crear su contraseña y acceder a la app.
+            </p>
+            <div className="space-y-1.5">
+              <Label htmlFor="add-name">Nombre completo</Label>
+              <Input id="add-name" name="name" placeholder="Carlos Mendoza" required />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="add-email">Email</Label>
+              <Input id="add-email" name="email" type="email" placeholder="carlos@correo.com" required />
+            </div>
+            {error && <p className="text-sm text-destructive">{error}</p>}
+            <div className="flex justify-end gap-2 pt-2">
+              <Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancelar</Button>
+              <Button type="submit" disabled={loading}>
+                {loading ? "Enviando…" : "Enviar invitación"}
+              </Button>
+            </div>
+          </form>
+        )}
       </DialogContent>
     </Dialog>
   );

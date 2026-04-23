@@ -1,15 +1,14 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { createClient as createAdminClient } from "@supabase/supabase-js";
+import { createServiceClient } from "@/lib/supabase/service";
 import { revalidatePath } from "next/cache";
 
 export async function addDriver(formData: FormData) {
-  const name = formData.get("name") as string;
-  const email = formData.get("email") as string;
-  const password = formData.get("password") as string;
+  const name = (formData.get("name") as string)?.trim();
+  const email = (formData.get("email") as string)?.trim();
 
-  if (!name || !email || !password) return { error: "Todos los campos son requeridos" };
+  if (!name || !email) return { error: "Nombre y email son requeridos" };
 
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -22,41 +21,36 @@ export async function addDriver(formData: FormData) {
     .single();
   if (!fleet) return { error: "Flotilla no encontrada" };
 
-  // Create user via Admin API (service_role)
-  const admin = createAdminClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    { auth: { autoRefreshToken: false, persistSession: false } }
-  );
+  const service = createServiceClient();
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 
-  const { data: newUser, error: createError } = await admin.auth.admin.createUser({
-    email,
-    password,
-    email_confirm: true,
+  // Invite user — Supabase sends email with link to set their own password
+  const { data: invited, error: inviteError } = await service.auth.admin.inviteUserByEmail(email, {
+    data: { name },
+    redirectTo: `${appUrl}/auth/callback?next=/driver`,
   });
-  if (createError || !newUser.user) return { error: createError?.message ?? "Error creando usuario" };
+  if (inviteError) return { error: inviteError.message };
+  if (!invited.user) return { error: "No se pudo crear el usuario" };
 
-  const driverId = newUser.user.id;
+  const driverId = invited.user.id;
 
-  const { error: profileError } = await admin.from("profiles").insert({
+  const { error: profileError } = await service.from("profiles").insert({
     id: driverId,
     name,
     role: "driver",
     status: "active",
   });
-
   if (profileError) {
-    await admin.auth.admin.deleteUser(driverId);
+    await service.auth.admin.deleteUser(driverId);
     return { error: profileError.message };
   }
 
-  const { error: linkError } = await admin.from("fleet_drivers").insert({
+  const { error: linkError } = await service.from("fleet_drivers").insert({
     fleet_id: fleet.id,
     driver_id: driverId,
   });
-
   if (linkError) {
-    await admin.auth.admin.deleteUser(driverId);
+    await service.auth.admin.deleteUser(driverId);
     return { error: linkError.message };
   }
 

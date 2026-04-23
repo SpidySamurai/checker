@@ -28,7 +28,9 @@ export default async function DriverPage() {
     .eq("id", user.id)
     .single();
   if (!profile) redirect("/onboarding");
-  if (profile.role !== "driver") redirect("/fleet");
+  if (profile.role === "fleet_owner") redirect("/fleet");
+  if (profile.role === "admin") redirect("/admin");
+  if (profile.role !== "driver") redirect("/");
 
   const today = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Mexico_City" }));
   today.setHours(0, 0, 0, 0);
