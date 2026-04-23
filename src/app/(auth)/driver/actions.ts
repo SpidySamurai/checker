@@ -71,3 +71,22 @@ export async function logTrip(attendanceId: string, formData: FormData) {
   revalidatePath("/driver");
   return { success: true };
 }
+
+export async function deleteTrip(tripId: string): Promise<{ error?: string }> {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { error: "No autenticado" };
+
+  const { data: trip } = await supabase
+    .from("trips")
+    .select("driver_id")
+    .eq("id", tripId)
+    .single();
+
+  if (!trip || trip.driver_id !== user.id) return { error: "No autorizado" };
+
+  const { error } = await supabase.from("trips").delete().eq("id", tripId);
+  if (error) return { error: error.message };
+  revalidatePath("/driver");
+  return {};
+}
