@@ -13,9 +13,12 @@ export async function GET(request: Request) {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
 
     if (!error) {
-      // Password reset — send to reset-password page
+      // Password reset or first-time invite — send to set-password page
       if (type === "recovery") {
         return NextResponse.redirect(`${origin}/reset-password`);
+      }
+      if (type === "invite") {
+        return NextResponse.redirect(`${origin}/reset-password?setup=1`);
       }
 
       // New registration — ensure profile exists
