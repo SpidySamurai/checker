@@ -41,13 +41,13 @@ export default async function AdminPage() {
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-4 md:p-6 space-y-4 md:space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-ink">Fleet owners</h1>
         <p className="text-sm text-muted-sk mt-0.5">{total} cuentas · {onTrial} en trial</p>
       </div>
 
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4">
         <StatCard label="Total" value={String(total)} sub={`+${total} registrados`} />
         <StatCard label="Activos" value={String(active)} sub={`${total ? Math.round(active/total*100) : 0}% activación`} />
         <StatCard label="En trial" value={String(onTrial)} sub={`${expiring} vencen <7d`} highlight={expiring > 0} />
@@ -55,7 +55,8 @@ export default async function AdminPage() {
       </div>
 
       <div className="border border-border rounded-lg overflow-hidden">
-        <table className="w-full text-sm">
+        <div className="overflow-x-auto">
+        <table className="w-full text-sm min-w-[600px]">
           <thead className="bg-canvas">
             <tr className="border-b border-border">
               <th className="px-4 py-3 text-left text-xs font-semibold text-muted-sk uppercase tracking-wide">Empresa</th>
@@ -104,6 +105,7 @@ export default async function AdminPage() {
             })}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   );

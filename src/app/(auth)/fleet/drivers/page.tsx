@@ -68,7 +68,7 @@ export default async function DriversPage() {
   const fmt = new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN", maximumFractionDigits: 0 });
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-4 md:p-6 space-y-4 md:space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-ink">Conductores</h1>
@@ -82,7 +82,7 @@ export default async function DriversPage() {
         <div className="relative">
           <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-sk" />
           <input
-            className="pl-8 pr-3 py-1.5 border border-border rounded-md text-sm bg-paper w-64 placeholder:text-muted-sk"
+            className="pl-8 pr-3 py-1.5 border border-border rounded-md text-sm bg-paper w-full max-w-xs placeholder:text-muted-sk"
             placeholder="Buscar por nombre…"
             readOnly
           />
@@ -91,7 +91,8 @@ export default async function DriversPage() {
 
       {/* Table */}
       <div className="border border-border rounded-lg overflow-hidden">
-        <table className="w-full text-sm">
+        <div className="overflow-x-auto">
+        <table className="w-full text-sm min-w-[480px]">
           <thead className="bg-canvas">
             <tr className="border-b border-border">
               <th className="px-4 py-3 text-left text-xs font-semibold text-muted-sk uppercase tracking-wide">Nombre</th>
@@ -125,6 +126,7 @@ export default async function DriversPage() {
             ))}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   );

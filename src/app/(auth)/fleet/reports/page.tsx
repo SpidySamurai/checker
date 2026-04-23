@@ -94,7 +94,7 @@ export default async function ReportsPage() {
   }));
 
   return (
-    <div className="p-6 space-y-8">
+    <div className="p-4 md:p-6 space-y-6 md:space-y-8">
       <div>
         <h1 className="text-2xl font-bold text-ink">Reportes</h1>
         <p className="text-sm text-muted-sk mt-0.5">{fleet.name}</p>
@@ -103,7 +103,7 @@ export default async function ReportsPage() {
       {/* KPI cards */}
       <section className="space-y-2">
         <h2 className="text-xs font-semibold text-muted-sk uppercase tracking-wide">Esta semana</h2>
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4">
           <StatCard label="Ganancias" value={fmt.format(weekTotal)} sub="neto MXN" highlight />
           <StatCard label="Viajes" value={String(weekCount)} sub="registrados" />
           <StatCard label="Prom. por viaje" value={fmt.format(avgPerTrip)} sub="neto MXN" />
@@ -112,20 +112,21 @@ export default async function ReportsPage() {
 
       <section className="space-y-2">
         <h2 className="text-xs font-semibold text-muted-sk uppercase tracking-wide">Este mes</h2>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
           <StatCard label="Ganancias" value={fmt.format(monthTotal)} sub="neto MXN" />
           <StatCard label="Viajes" value={String(monthCount)} sub="registrados" />
         </div>
       </section>
 
-      <div className="grid grid-cols-[1fr_280px] gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-4 md:gap-6">
         {/* Top conductores */}
         <div className="border border-border rounded-lg overflow-hidden">
           <div className="px-4 py-3 border-b border-border flex items-center gap-2">
             <TrendingUp size={14} className="text-primary" />
             <h2 className="font-semibold text-sm text-ink">Top conductores (semana)</h2>
           </div>
-          <table className="w-full text-sm">
+          <div className="overflow-x-auto">
+          <table className="w-full text-sm min-w-[360px]">
             <thead className="bg-muted/40">
               <tr className="border-b border-border">
                 <th className="px-4 py-2.5 text-left text-xs font-semibold text-muted-sk uppercase tracking-wide">Conductor</th>
@@ -152,6 +153,7 @@ export default async function ReportsPage() {
               ))}
             </tbody>
           </table>
+          </div>
         </div>
 
         {/* Plataformas */}

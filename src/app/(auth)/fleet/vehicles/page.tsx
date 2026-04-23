@@ -29,7 +29,7 @@ export default async function VehiclesPage() {
     .order("created_at", { ascending: false });
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-4 md:p-6 space-y-4 md:space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-ink">Vehículos</h1>
@@ -39,7 +39,8 @@ export default async function VehiclesPage() {
       </div>
 
       <div className="border border-border rounded-lg overflow-hidden">
-        <table className="w-full text-sm">
+        <div className="overflow-x-auto">
+        <table className="w-full text-sm min-w-[480px]">
           <thead className="bg-canvas">
             <tr className="border-b border-border">
               <th className="px-4 py-3 text-left text-xs font-semibold text-muted-sk uppercase tracking-wide">Placa</th>
@@ -69,6 +70,7 @@ export default async function VehiclesPage() {
             })}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   );

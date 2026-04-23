@@ -103,7 +103,7 @@ export default async function DriverProfilePage({ params }: { params: Promise<{ 
   const nowMs = Date.now();
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-4 md:p-6 space-y-4 md:space-y-6">
       {/* Back nav */}
       <Link href="/fleet/drivers" className="flex items-center gap-1.5 text-sm text-muted-sk hover:text-ink w-fit">
         <ArrowLeft size={14} />
@@ -125,7 +125,7 @@ export default async function DriverProfilePage({ params }: { params: Promise<{ 
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4">
         <StatCard label="Turnos sem." value={String(weekShifts?.length ?? 0)} sub={`${weekHours.toFixed(0)}h totales`} />
         <StatCard label="Viajes sem." value={String(totalTrips)} sub={`${(totalTrips / 7).toFixed(1)} / día`} />
         <StatCard label="Ganancias" value={fmt.format(weekEarnings)} sub="neto MXN" highlight />
@@ -164,7 +164,8 @@ export default async function DriverProfilePage({ params }: { params: Promise<{ 
       <div>
         <h2 className="font-semibold text-sm text-ink mb-3">Historial de turnos</h2>
         <div className="border border-border rounded-lg overflow-hidden">
-          <table className="w-full text-sm">
+          <div className="overflow-x-auto">
+          <table className="w-full text-sm min-w-[400px]">
             <thead className="bg-canvas">
               <tr className="border-b border-border">
                 <th className="px-4 py-3 text-left text-xs font-semibold text-muted-sk uppercase tracking-wide">Fecha</th>
@@ -202,6 +203,7 @@ export default async function DriverProfilePage({ params }: { params: Promise<{ 
               )}
             </tbody>
           </table>
+          </div>
         </div>
       </div>
     </div>

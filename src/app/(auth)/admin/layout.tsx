@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { AdminSidebar } from "@/components/checker/admin-sidebar";
+import { AdminMobileNav } from "@/components/checker/admin-mobile-nav";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
@@ -16,9 +17,12 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   if (profile?.role !== "admin") redirect("/");
 
   return (
-    <div className="flex h-screen bg-slate-50 dark:bg-slate-950">
-      <AdminSidebar />
-      <main className="flex-1 overflow-auto">{children}</main>
+    <div className="flex h-screen bg-canvas">
+      <div className="hidden md:flex">
+        <AdminSidebar />
+      </div>
+      <main className="flex-1 overflow-auto pb-14 md:pb-0">{children}</main>
+      <AdminMobileNav />
     </div>
   );
 }
