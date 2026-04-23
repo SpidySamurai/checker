@@ -38,7 +38,7 @@ export async function updateSession(request: NextRequest) {
   }
 
   // Admin routes require role = "admin"
-  if (pathname.startsWith("/admin") && user) {
+  if (pathname.startsWith("/admin")) {
     const { data: adminProfile } = await supabase
       .from("profiles")
       .select("role")
