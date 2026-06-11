@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { logAudit } from "@/lib/audit";
+import { tripSchema, firstError } from "@/lib/schemas";
 
 export async function checkIn() {
   const supabase = await createClient();
@@ -51,12 +52,15 @@ export async function logTrip(attendanceId: string, formData: FormData) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { error: "No autenticado" };
 
-  const platform = formData.get("platform") as string;
-  const gross    = Number(formData.get("gross"));
-  const net      = Number(formData.get("net"));
-  const distance = Number(formData.get("distance"));
-
-  if (!platform || !gross || !net) return { error: "Plataforma, bruto y neto son requeridos" };
+  const rawDistance = Number(formData.get("distance"));
+  const parsed = tripSchema.safeParse({
+    platform: formData.get("platform"),
+    gross: Number(formData.get("gross")),
+    net: Number(formData.get("net")),
+    distance: Number.isFinite(rawDistance) && rawDistance > 0 ? rawDistance : null,
+  });
+  if (!parsed.success) return { error: firstError(parsed.error) };
+  const { platform, gross, net, distance } = parsed.data;
 
   const { data: shift } = await supabase
     .from("attendance")
@@ -71,7 +75,7 @@ export async function logTrip(attendanceId: string, formData: FormData) {
     platform,
     gross_amount: gross,
     net_amount: net,
-    distance_km: distance || null,
+    distance_km: distance,
   });
 
   if (error) return { error: error.message };

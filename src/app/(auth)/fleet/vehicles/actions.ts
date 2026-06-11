@@ -2,15 +2,19 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+import { vehicleSchema, firstError } from "@/lib/schemas";
 
 export async function addVehicle(formData: FormData) {
-  const plate = (formData.get("plate") as string)?.trim().toUpperCase();
-  const make  = formData.get("make")  as string;
-  const model = formData.get("model") as string;
-  const year  = Number(formData.get("year"));
-  const color = formData.get("color") as string;
-
-  if (!plate || !make || !model) return { error: "Placa, marca y modelo son requeridos" };
+  const rawYear = Number(formData.get("year"));
+  const parsed = vehicleSchema.safeParse({
+    plate: ((formData.get("plate") as string) ?? "").trim().toUpperCase(),
+    make: formData.get("make"),
+    model: formData.get("model"),
+    year: Number.isFinite(rawYear) && rawYear > 0 ? rawYear : null,
+    color: ((formData.get("color") as string) ?? "").trim() || null,
+  });
+  if (!parsed.success) return { error: firstError(parsed.error) };
+  const { plate, make, model, year, color } = parsed.data;
 
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -28,8 +32,8 @@ export async function addVehicle(formData: FormData) {
     plate,
     make,
     model,
-    year: year || null,
-    color: color || null,
+    year,
+    color,
   });
 
   if (error) return { error: error.message };

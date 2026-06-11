@@ -1,6 +1,8 @@
+import "server-only";
 import { createClient } from "@supabase/supabase-js";
 
-// Server-only. Never import this from client components.
+// Server-only. The "server-only" import above makes importing this from a
+// client component a build error.
 export function createServiceClient() {
   return createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
