@@ -1,36 +1,50 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Checker
 
-## Getting Started
+Fleet management for ride-hailing drivers in LATAM. Live at [**checker.lab2next.com**](https://checker.lab2next.com).
 
-First, run the development server:
+![Checker — track every shift, ride, and dollar](.github/readme/01-cover.png)
+
+## The idea
+
+Fleet owners in LATAM (people who own a few cars and rent them to Uber, Didi, Cabify, and InDrive drivers) still run their business on WhatsApp messages and paper notebooks: who is on shift, how much each driver made, which car has which plates. I built Checker to put all of that in one place.
+
+The design constraint that shaped the whole product: drivers use it at night, while working, with one hand. That is why check-in is a giant circular button and the driver view defaults to dark mode. The owner gets a desktop dashboard; the driver gets two taps and zero typing.
+
+## What's inside
+
+- **Two roles, two interfaces**: fleet owner dashboard (live KPIs, drivers on shift, vehicles, filterable reports) and a mobile-first driver view (check-in/check-out, trip logging in seconds, real-time net earnings per shift)
+- **Multi-platform earnings**: Uber, Didi, Cabify, and InDrive in one dashboard, with gross vs net and automatic commission math
+- **Vehicle management**: plates, models, assignments, one tap to reassign
+- **Guided onboarding**: from account creation to first registered shift in about 10 minutes
+- **Dark mode by default for drivers**, because most of this work happens at night
+
+## A quick tour
+
+| One dashboard, every platform | Built for drivers on the go |
+| --- | --- |
+| ![Owner dashboard on desktop](.github/readme/02-desk.png) | ![Driver view on mobile](.github/readme/03-mob.png) |
+
+| Real-time numbers | Always in your pocket |
+| --- | --- |
+| ![Earnings and shifts update as they happen](.github/readme/04-desk.png) | ![The full app, ready for mobile](.github/readme/05-mob.png) |
+
+## Stack
+
+Next.js (App Router) · TypeScript · Tailwind CSS · shadcn/ui · pnpm
+
+## Run it locally
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Copy `.env.example` to `.env.local` and fill in the values.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Status
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Functional MVP with a live demo. Built end to end (product, design, and code) as part of my habit of building SaaS for real LATAM problems, the same muscle behind [Lab2Next](https://lab2next.com).
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Designed and built by [Javier Chi Ortiz](https://javierchiortiz.dev/en) in Mérida, México 🇲🇽
